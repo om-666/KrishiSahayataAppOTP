@@ -5,10 +5,10 @@
       "name": "John Doe",
       "claim_type": "Equipment Repair",
       "amount": 500,
-      "status": "Under Processing",
+      "status": "on-going",
       "submitted_at": "2024-03-15T10:00:00.000+00:00",
       "updated_at": "2024-03-15T10:30:00.000+00:00",
-      "phone_number": "123-456-7890"
+      "phone_number": "+91 63700 81836"
     }
   ]
   
