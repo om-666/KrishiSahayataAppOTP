@@ -1,0 +1,14 @@
+[
+    {
+      "_id": "65f353c200c8b8faaec622eb",
+      "user_id": "1",
+      "name": "John Doe",
+      "claim_type": "Equipment Repair",
+      "amount": 500,
+      "status": "Under Processing",
+      "submitted_at": "2024-03-15T10:00:00.000+00:00",
+      "updated_at": "2024-03-15T10:30:00.000+00:00",
+      "phone_number": "123-456-7890"
+    }
+  ]
+  
