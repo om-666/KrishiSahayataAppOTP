@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+  <h1 class="text-3xl font-bold my-4">Admin Dashboard</h1>
+  <table class="table-auto w-full">
+    <thead>
+      <tr>
+        <th class="px-4 py-2">Claim ID</th>
+        <th class="px-4 py-2">Name</th>
+        <th class="px-4 py-2">Claim Type</th>
+        <th class="px-4 py-2">Amount</th>
+        <th class="px-4 py-2">Status</th>
+        <th class="px-4 py-2">Action</th>
+      </tr>
+    </thead>
+    <tbody id="claims-table-body">
+      <!-- Claims will be dynamically inserted here -->
+    </tbody>
+  </table>
+  <script>
+    fetch('/admin/claims')
+      .then(response => response.json())
+      .then(claims => {
+        const tableBody = document.getElementById('claims-table-body');
+        claims.forEach(claim => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="border px-4 py-2">${claim._id}</td>
+            <td class="border px-4 py-2">${claim.name}</td>
+            <td class="border px-4 py-2">${claim.claim_type}</td>
+            <td class="border px-4 py-2">${claim.amount}</td>
+            <td class="border px-4 py-2">${claim.status}</td>
+            <td class="border px-4 py-2">
+              <select id="status-${claim._id}" class="border rounded px-2 py-1">
+                <option value="Under Processing">Under Processing</option>
+                <option value="Approved">Approved</option>
+                <option value="Received">Received</option>
+              </select>
+              <button onclick="updateStatus('${claim._id}')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">Update</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      });
+
+    function updateStatus(claimId) {
+      const status = document.getElementById(`status-${claimId}`).value;
+      fetch('/admin/update-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ claimId, status })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message);
+        // Refresh the page to update the table
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update claim status');
+      });
+    }
+  </script>
+</body>
+</html>

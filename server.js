@@ -3,6 +3,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const twilio = require('twilio');
+const bodyParser = require('body-parser');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -39,7 +40,7 @@ app.post('/check-status', (req, res) => {
 
     if (claim.status === 'Approved' || claim.status === 'Received') {
       client.messages.create({
-        body: 'Your claim has been processed!',
+        body: 'Your claim has been processed! Hii Smriti',
         to: claim.phone_number,
         from: process.env.TWILIO_PHONE_NUMBER
       })
@@ -49,6 +50,42 @@ app.post('/check-status', (req, res) => {
   } else {
     res.status(404).json({ error: 'No claim found for this UID' });
   }
+});
+
+// Admin login route
+app.get('/admin/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
+});
+
+// Admin dashboard route
+app.get('/admin/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html'));
+});
+app.get('/admin/claims', (req, res) => {
+  res.json(data); // Assuming 'data' contains your claims data
+});
+// Route to handle updating claim status
+app.post('/admin/update-status', (req, res) => {
+  const { claimId, status } = req.body;
+  // Find the claim in the data array and update its status
+  const claimIndex = data.findIndex(item => item._id === claimId);
+  if (claimIndex !== -1) {
+    data[claimIndex].status = status;
+    // Write the updated data back to the JSON file
+    fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2));
+    res.json({ message: 'Claim status updated successfully' });
+  } else {
+    res.status(404).json({ error: 'Claim not found' });
+  }
+});
+
+
+// Admin login form submission
+app.post('/admin/login', (req, res) => {
+  const { token, password } = req.body;
+  // Add your logic to verify admin token and password
+  // For now, assuming token and password are correct
+  res.redirect('/admin/dashboard');
 });
 
 const PORT = process.env.PORT || 3000;
