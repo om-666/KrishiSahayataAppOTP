@@ -3,18 +3,77 @@
 <head>
   <title>Admin Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+ 
+    /* body {
+      background-image: url('https://i.pinimg.com/474x/ca/24/d7/ca24d77239a416ce586bdc5c2df2562e.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    } */
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      border: 2px solid #333;
+    }
+
+    th, td {
+      border: 2px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    /* Search input and button styles */
+    .search-container {
+      margin-bottom: 20px;
+    }
+
+    .search-container input[type=text] {
+      padding: 5px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .search-container button {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .search-container button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
   <h1 class="text-3xl font-bold my-4">Admin Dashboard</h1>
-  <table class="table-auto w-full">
+  <div class="search-container">
+    <input id="search-input" type="text" placeholder="Search by Claim Type or Name">
+    <button onclick="search()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">Search</button>
+  </div>
+  <table>
     <thead>
       <tr>
-        <th class="px-4 py-2">Claim ID</th>
-        <th class="px-4 py-2">Name</th>
-        <th class="px-4 py-2">Claim Type</th>
-        <th class="px-4 py-2">Amount</th>
-        <th class="px-4 py-2">Status</th>
-        <th class="px-4 py-2">Action</th>
+        <th>Claim ID</th>
+        <th>Name</th>
+        <th>Claim Type</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody id="claims-table-body">
@@ -28,14 +87,15 @@
         const tableBody = document.getElementById('claims-table-body');
         claims.forEach(claim => {
           const row = document.createElement('tr');
+          row.id = `row-${claim._id}`;
           row.innerHTML = `
-            <td class="border px-4 py-2">${claim._id}</td>
-            <td class="border px-4 py-2">${claim.name}</td>
-            <td class="border px-4 py-2">${claim.claim_type}</td>
-            <td class="border px-4 py-2">${claim.amount}</td>
-            <td class="border px-4 py-2">${claim.status}</td>
-            <td class="border px-4 py-2">
-              <select id="status-${claim._id}" class="border rounded px-2 py-1">
+            <td>${claim._id}</td>
+            <td>${claim.name}</td>
+            <td>${claim.claim_type}</td>
+            <td>${claim.amount}</td>
+            <td>${claim.status}</td>
+            <td>
+              <select id="status-${claim._id}">
                 <option value="Under Processing">Under Processing</option>
                 <option value="Approved">Approved</option>
                 <option value="Received">Received</option>
@@ -46,6 +106,17 @@
           tableBody.appendChild(row);
         });
       });
+
+    function search() {
+      const searchValue = document.getElementById('search-input').value.trim().toLowerCase();
+      const claims = document.querySelectorAll('#claims-table-body tr');
+      claims.forEach(claim => {
+        const name = claim.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        const claimType = claim.querySelector('td:nth-child(3)').textContent.toLowerCase();
+        const shouldShow = name.includes(searchValue) || claimType.includes(searchValue);
+        claim.style.display = shouldShow ? 'table-row' : 'none';
+      });
+    }
 
     function updateStatus(claimId) {
       const status = document.getElementById(`status-${claimId}`).value;
